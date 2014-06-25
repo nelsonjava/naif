@@ -186,6 +186,10 @@ public final class DBFReader {
             		
             		break;                
             	case 'N': // NUMERIC
+  	                if (value.isEmpty()) {
+            			value = "0";
+            		}
+
             		if (column.getDecfieldLenght() == 0) {
             			recordFromTable.getValues().put(key, Integer.parseInt(value));
             		} else {
