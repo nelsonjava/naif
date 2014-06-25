@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!-- rem git remote add origin https://github.com/nelsonjava/www.git -->
+<!-- http://ebook.online-convert.com/es/convertir-a-epub -->
+<project name="gi" default="bak" basedir=".">
+
+  <tstamp/>
+  <property name="bak"          value="../../backups/njava"/>
+  <property name="project.name" value="www"/>
+
+  <target name="bak">
+    <delete dir="target" failonerror="no"/>
+    <mkdir dir="${bak}/${project.name}" />
+    <jar jarfile="${bak}/${project.name}/${DSTAMP}-${TSTAMP}-${project.name}.zip" basedir="."/>
+  </target>
+
+  <target name="ok">
+    <mkdir dir="${bak}/${project.name}" />
+    <delete dir="target" failonerror="no"/>
+    <jar jarfile="${bak}/${project.name}/ok-${DSTAMP}-${TSTAMP}-${project.name}.zip" basedir="."/>
+  </target>
+
+  <target name="del" description="Initialize the build">
+    <delete dir="target" failonerror="no"/>
+  </target>
+
+</project>
