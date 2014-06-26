@@ -5,7 +5,7 @@
 
   <tstamp/>
   <property name="bak"          value="../../backups/njava"/>
-  <property name="project.name" value="www"/>
+  <property name="project.name" value="naif"/>
 
   <target name="bak">
     <delete dir="target" failonerror="no"/>
