@@ -5,9 +5,13 @@ import com.naif.tools.dbffile.DBFFile;
 import com.naif.tools.dbffile.DBFReader;
 import com.naif.tools.dbffile.DBFRecord;
 
+import com.naif.tools.filetxt.FileTxt;
+
 import com.naif.tools.dbf.BeanUtils;
 
 public class DbfUtils {
+
+    private static FileTxt filetxt;
 
     public static void beanDbf(String sfile,String sClass) {
 
@@ -186,5 +190,31 @@ public class DbfUtils {
     System.out.println("}");
 
     } // beanDbf
+
+    public static void beanDbfile(String sfile) {
+
+        DBFFile dbf = new DBFReader().readDBFFile(sfile);
+
+        StringBuilder javaSource = new StringBuilder();
+
+        if (dbf == null){
+           System.out.println( "No existen Registros" );
+           return;
+        }
+
+        javaSource.append("\npackage com.naif.sima.dbfs;");
+        javaSource.append("\n");
+        javaSource.append("\nimport java.util.*;");
+        javaSource.append("\n");
+        javaSource.append("\nimport com.naif.tools.dbffile.DBFFieldDescriptor;");
+        javaSource.append("\nimport com.naif.tools.dbffile.DBFFile;");
+        javaSource.append("\nimport com.naif.tools.dbffile.DBFReader;");
+        javaSource.append("\nimport com.naif.tools.dbffile.DBFRecord;");
+        javaSource.append("\n");
+
+
+        filetxt = new FileTxt("c:/models.site.view", "Recibos.java", javaSource.toString());
+
+    } // beanDbfile
 
 }
