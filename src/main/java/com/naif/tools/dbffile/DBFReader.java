@@ -89,7 +89,7 @@ public final class DBFReader {
 		// fieldName
 		byte[] fieldName = new byte[11];
 		fiis.readFully(fieldName); 
-		fieldDesc.setField(new String(fieldName)); // FIXME .trim()
+		//fieldDesc.setField(new String(fieldName)); // FIXME .trim()
 
 		// 13 = FIELD DESCRIPTOR END
 		if (fieldName[0] == 13) { 
@@ -103,20 +103,24 @@ public final class DBFReader {
         
 		switch (fieldTypeCode) {
             case 67: // CHARACTER
+                fieldDesc.setField(new String(fieldName).trim());
             	fieldDesc.setFieldType('C');
             	fieldDesc.setFieldLenght(fiis.readUnsignedShort());
                 break;
             case 68: // DATE
+                fieldDesc.setField(new String(fieldName).trim());
             	fieldDesc.setFieldType('D');
             	fieldDesc.setFieldLenght(fiis.readUnsignedByte());
             	fiis.readByte(); // 18 : Not needed 
                 break;
             case 76: // LOGICAL
+                fieldDesc.setField(new String(fieldName));
             	fieldDesc.setFieldType('L');
             	fieldDesc.setFieldLenght(fiis.readUnsignedByte());
-            	fiis.readByte(); // 18 : Not needed 
-                break;                
+            	fiis.readByte(); // 18 : Not needed
+                break;
             case 78: // NUMERIC
+                fieldDesc.setField(new String(fieldName).trim());
             	fieldDesc.setFieldType('N');
             	fieldDesc.setFieldLenght(fiis.readUnsignedByte());
             	

@@ -191,7 +191,7 @@ public class DbfUtils {
 
     } // beanDbf
 
-    public static void beanDbfile(String sfile) {
+    public static void beanDbfile(String sfile,String sClass,String visibilidad ) {
 
         DBFFile dbf = new DBFReader().readDBFFile(sfile);
 
@@ -202,7 +202,7 @@ public class DbfUtils {
            return;
         }
 
-        javaSource.append("\npackage com.naif.sima.dbfs;");
+        javaSource.append("package com.naif.sima.dbf;");
         javaSource.append("\n");
         javaSource.append("\nimport java.util.*;");
         javaSource.append("\n");
@@ -212,9 +212,216 @@ public class DbfUtils {
         javaSource.append("\nimport com.naif.tools.dbffile.DBFRecord;");
         javaSource.append("\n");
 
+        javaSource.append("\npublic class "+sClass+" implements java.io.Serializable {");
+        javaSource.append("\n");
 
-        filetxt = new FileTxt("c:/models.site.view", "Recibos.java", javaSource.toString());
+        String campo = "";
+        String space = "\n   ";
+
+
+        for (DBFFieldDescriptor fd : dbf.getFieldDescs()) {
+
+            campo = BeanUtils.attribute(fd.getField());
+
+            switch(fd.getFieldType()) {
+                case 'C':
+                    javaSource.append(space+visibilidad+" String " + campo + ";"); break;
+                case 'N':
+                    if (fd.getDecfieldLenght() == 0) {
+                        javaSource.append(space+visibilidad+" int " + campo + ";");
+                    } else {
+                        javaSource.append(space+visibilidad+" float " + campo + ";");
+                    }
+                    break;
+                case 'D':
+                    javaSource.append(space+visibilidad+" Date " + campo + ";"); break;
+                case 'L':
+                    javaSource.append(space+visibilidad+" boolean " + campo + ";"); break;
+                default: break;
+            } // switch
+
+        } // for
+
+        javaSource.append("\n");
+
+        javaSource.append(space+"private DBFFile dbf;");
+        javaSource.append(space+"private ArrayList<DBFRecord> registros;");
+        javaSource.append(space+"private DBFRecord registro;");
+
+        javaSource.append("\n");
+
+        javaSource.append(space+"public "+sClass+"(String sFile) {");
+        javaSource.append(space+"  dbf = new DBFReader().readDBFFile(sFile);");
+        javaSource.append(space+"  registros = dbf.getRecords();");
+        javaSource.append(space+"}");
+
+        javaSource.append("\n");
+
+        for (DBFFieldDescriptor fd : dbf.getFieldDescs()) {
+
+            campo = fd.getField();
+
+            switch(fd.getFieldType()) {
+                case 'C':
+                     javaSource.append(space+"public String get" + campo + "() {");
+                     javaSource.append(space+"    return "+BeanUtils.attribute(campo)+";");
+                     javaSource.append(space+"}");
+                     break;
+
+                case 'N':
+                     if (fd.getDecfieldLenght() == 0) {
+
+                         javaSource.append(space+"public int get" + campo + "() {");
+                         javaSource.append(space+"    return "+BeanUtils.attribute(campo)+";");
+                         javaSource.append(space+"}");
+
+                     } else {
+
+                         javaSource.append(space+"public float get" + campo + "() {");
+                         javaSource.append(space+"    return "+BeanUtils.attribute(campo)+";");
+                         javaSource.append(space+"}");
+                     }
+                     break;
+
+                case 'D':
+
+                     javaSource.append(space+"public Date get" + campo + "() {");
+                     javaSource.append(space+"    return "+BeanUtils.attribute(campo)+";");
+                     javaSource.append(space+"}");
+                     break;
+
+                case 'L':
+
+                     javaSource.append(space+"public boolean get" + campo + "() {");
+                     javaSource.append(space+"    return "+BeanUtils.attribute(campo)+";");
+                     javaSource.append(space+"}");
+                     break;
+
+
+                default: break;
+            } // switch
+
+            javaSource.append("\n");
+
+        } // for
+
+        javaSource.append(space+"public ArrayList<DBFRecord> getRegistros() {");
+        javaSource.append(space+"    return registros;");
+        javaSource.append(space+"}");
+        javaSource.append("\n");
+
+        javaSource.append(space+"public ArrayList<String> getIds(String id) {");
+        javaSource.append("\n");
+        javaSource.append(space+"    ArrayList<String> ids = new ArrayList<String>();");
+        javaSource.append("\n");
+        javaSource.append(space+"    for (DBFRecord registro : registros) {");
+        javaSource.append(space+"        ids.add((String)registro.getField(id));");
+        javaSource.append(space+"    }");
+        javaSource.append("\n");
+        javaSource.append(space+"    return ids;");
+        javaSource.append(space+"}");
+        javaSource.append("\n");
+
+        javaSource.append(space+"public void seek(String xCodigo,String cCodigo) {");
+        javaSource.append(space+"    registro = dbf.getRecord(xCodigo,cCodigo);");
+        javaSource.append(space+"    setRegistro();");
+        javaSource.append(space+"}");
+        javaSource.append("\n");
+
+        javaSource.append(space+"public void setRegistro() {");
+        for (DBFFieldDescriptor fd : dbf.getFieldDescs()) {
+
+            campo = fd.getField();
+
+            switch(fd.getFieldType()) {
+
+                case 'C':
+                     javaSource.append(space+"    this."+BeanUtils.attribute(campo));
+                     javaSource.append(" = (String)registro.getField(\""+campo+"\");");
+                     break;
+
+                case 'N':
+                     if (fd.getDecfieldLenght() == 0) {
+
+                        javaSource.append(space+"    this."+BeanUtils.attribute(campo));
+                        javaSource.append(" = ((Integer)registro.getField(\""+campo);
+                        javaSource.append("\")).intValue();");
+
+                     } else {
+
+                        javaSource.append(space+"    this."+BeanUtils.attribute(campo));
+                        javaSource.append(" = ((Float)registro.getField(\""+campo);
+                        javaSource.append("\")).floatValue();");
+                     }
+                     break;
+
+                case 'D':
+
+                     javaSource.append(space+"    this."+BeanUtils.attribute(campo));
+                     javaSource.append(" = (Date)registro.getField(\""+campo+"\");");
+
+                     break;
+
+                case 'L':
+
+                     javaSource.append(space+"    this."+BeanUtils.attribute(campo));
+                     javaSource.append(" = ((Boolean)registro.getField(\""+campo);
+                     javaSource.append("\")).booleanValue();");
+
+                     break;
+
+                default: break;
+            } // switch
+
+        } // for
+
+        javaSource.append(space+"}");
+
+        javaSource.append("\n");
+
+        javaSource.append(space+"public void viewRegistro(String xCodigo,String cCodigo) {");
+
+        javaSource.append("\n");
+        javaSource.append(space+"    seek(xCodigo,cCodigo);");
+        javaSource.append("\n");
+
+        javaSource.append(space+"    System.out.println(\"-----------------------Detalle-de Registro-----------------------\");");
+        for (DBFFieldDescriptor fd : dbf.getFieldDescs()) {
+
+            campo = fd.getField();
+
+            javaSource.append(space+"    System.out.println(");
+            javaSource.append("\""+campo+":\"+");
+            javaSource.append("get"+campo+"());");
+
+
+        } // for
+
+        javaSource.append("\n");
+        javaSource.append(space+"    System.out.println();");
+
+        javaSource.append(space+"}");
+
+        javaSource.append("\n");
+        javaSource.append(space+"public void viewRegistros(String xCodigo) {");
+
+        javaSource.append("\n");
+        javaSource.append(space+"    ArrayList<String> codigos = null;");
+        javaSource.append(space+"    codigos = getIds(xCodigo);");
+        javaSource.append("\n");
+
+        javaSource.append(space+"    for (String codigo : codigos) {");
+        javaSource.append(space+"         viewRegistro(xCodigo,codigo);");
+        javaSource.append(space+"    } // for");
+
+        javaSource.append(space+"} // viewRegistros");
+
+        javaSource.append("\n");
+        javaSource.append("\n} // class ");
+
+        filetxt = new FileTxt("c:/models.com.naif.sima.dbf", sClass+".java", javaSource.toString());
 
     } // beanDbfile
+
 
 }
