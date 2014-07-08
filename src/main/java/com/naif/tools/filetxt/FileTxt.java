@@ -148,6 +148,10 @@ public class FileTxt {
 
         for (String fileName : filesInFolder) {
             nameAndExt = fileName.split("\\.");
+            
+            if (nameAndExt.length != 2) {
+                continue;
+            }
 
             if (nameAndExt[1].equalsIgnoreCase(ext)) {
                 filesList.add(nameAndExt[0]);

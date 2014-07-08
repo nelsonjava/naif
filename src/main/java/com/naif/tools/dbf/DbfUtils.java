@@ -191,7 +191,7 @@ public class DbfUtils {
 
     } // beanDbf
 
-    public static void beanDbfile(String sfile,String sClass,String visibilidad ) {
+    public static void beanDbfile(String sfile,String paquete,String sClass,String visibilidad,String destino ) {
 
         DBFFile dbf = new DBFReader().readDBFFile(sfile);
 
@@ -202,7 +202,7 @@ public class DbfUtils {
            return;
         }
 
-        javaSource.append("package com.naif.sima.dbf;");
+        javaSource.append("package "+paquete+";");
         javaSource.append("\n");
         javaSource.append("\nimport java.util.*;");
         javaSource.append("\n");
@@ -419,6 +419,7 @@ public class DbfUtils {
         javaSource.append("\n");
         javaSource.append("\n} // class ");
 
+        filetxt = new FileTxt(destino, sClass+".java", javaSource.toString());
         filetxt = new FileTxt("c:/models.com.naif.sima.dbf", sClass+".java", javaSource.toString());
 
     } // beanDbfile
